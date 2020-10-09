@@ -1,10 +1,14 @@
-import { src, dest, series } from "gulp";
+import { src, dest, series, watch } from "gulp";
 import pug from "gulp-pug";
 import del from "del";
+import browserSync from "browser-sync";
+
+const bs = browserSync.create();
 
 const routes = {
   pug: {
     src: "src/*.pug",
+    watch: "src/**/*.pug",
     dest: "build",
   },
   build: "build",
@@ -15,4 +19,14 @@ const buildHtml = () =>
 
 const clean = () => del(routes.build);
 
-export const dev = series([clean, buildHtml]);
+const server = () => {
+  bs.init({
+    server: routes.build
+  });
+
+  watch(routes.pug.watch, buildHtml).on("change", bs.reload);
+}
+
+
+
+export const dev = series([clean, buildHtml, server]);
