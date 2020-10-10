@@ -6,6 +6,7 @@ import image from "gulp-image";
 import sass from "gulp-sass";
 import sourcemaps from "gulp-sourcemaps";
 import autoprefixer from "gulp-autoprefixer";
+import ghPages from "gulp-gh-pages";
 sass.compiler = require("node-sass");
 
 const bs = browserSync.create();
@@ -55,6 +56,8 @@ const server = () => {
   });
 }
 
-const prepare = series([clean, buildImage, buildHtml, buildCss])
+const gh = () => src(`${routes.build}/**/*`).pipe(ghPages());
 
-export const dev = series([prepare, server]);
+export const build = series([clean, buildImage, buildHtml, buildCss]);
+export const dev = series([build, server]);
+export const deploy = series([build, gh])
